@@ -57,7 +57,7 @@ const props = defineProps({
 		required: true,
 	},
 });
-const { id, value, dynamicContent, barcodeFormat, barcodeColor, barcodeBackgroundColor, startX, startY, width, height, style, classes } = toRefs(
+const { id, value, dynamicContent, barcodeFormat, barcodeShowText, barcodeColor, barcodeBackgroundColor, startX, startY, width, height, style, classes } = toRefs(
 	props.object
 );
 const barcodeSvg = ref(null);
@@ -67,7 +67,7 @@ watch(()=> dynamicContent.value, () => {
 	}
 }, { deep:true, immediate: true });
 
-watch(() => [value.value, barcodeFormat.value, barcodeColor.value, barcodeBackgroundColor.value], async () => {
+watch(() => [value.value, barcodeFormat.value, barcodeShowText.value, barcodeColor.value, barcodeBackgroundColor.value], async () => {
 	if (!value.value || !barcodeFormat.value) return;
 	try {
 		const options = {
@@ -78,6 +78,7 @@ watch(() => [value.value, barcodeFormat.value, barcodeColor.value, barcodeBackgr
 			options["module_color"] = barcodeColor.value || "#000000";
 		} else {
 			options["foreground"] = barcodeColor.value || "#000000";
+			options["show_text"] = barcodeShowText.value || "Yes";
 		}
 		let barcode = await frappe.call(
 			"print_designer.print_designer.page.print_designer.print_designer.get_barcode",

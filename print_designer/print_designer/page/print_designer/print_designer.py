@@ -90,9 +90,9 @@ def get_barcode(barcode_format, barcode_value, options={}, width=None, height=No
 	if (isinstance(barcode_value, str) and barcode_value.startswith("<svg")):
 		import re
 		barcode_value = re.search(r'data-barcode-value="(.*?)">', barcode_value).group(1)
-	
+
 	if barcode_format == "qrcode": return get_qrcode(barcode_value, options, png_base64)
-	
+
 	import barcode
 	from barcode.writer import ImageWriter, SVGWriter
 	from io import BytesIO
@@ -117,12 +117,12 @@ def get_barcode(barcode_format, barcode_value, options={}, width=None, height=No
 			else:
 				print(height)
 				self._root.setAttribute("height", height)
-			
+
 			self._root.setAttribute("viewBox", f"0 0 {vw * 3.7795275591} {vh * 3.7795275591}")
 
 	if barcode_format not in barcode.PROVIDED_BARCODES:
 		return f"Barcode format {barcode_format} not supported. Valid formats are: {barcode.PROVIDED_BARCODES}"
-	writer = ImageWriter() if png_base64 else PDSVGWriter()	
+	writer = ImageWriter() if png_base64 else PDSVGWriter()
 	barcode_class = barcode.get_barcode_class(barcode_format)
 
 	try:
@@ -131,14 +131,15 @@ def get_barcode(barcode_format, barcode_value, options={}, width=None, height=No
 		frappe.msgprint(f"Invalid barcode value <b>{barcode_value}</b> for format <b>{barcode_format}</b>", raise_exception=True, alert=True, indicator="red")
 
 	stream = BytesIO()
-	barcode.write(stream, options)
+	show_text = options.pop("show_text")
+	barcode.write(stream, options, text="" if show_text == "No" else None)
 	barcode_value = stream.getvalue().decode('utf-8')
 	stream.close()
 
 	if png_base64:
 		import base64
 		barcode_value = base64.b64encode(barcode_value)
-	
+
 	return { "type": "png_base64" if png_base64 else "svg", "value": barcode_value }
 
 
