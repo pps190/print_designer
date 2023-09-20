@@ -111,7 +111,7 @@ const setLabel = (value) => {
 		label.value = value;
 	}
 };
-const { barcodeColor, barcodeBackgroundColor, isDynamic, barcodeFormat, style} = toRefs(MainStore.getCurrentElementsValues[0]);
+const { barcodeColor, barcodeBackgroundColor, isDynamic, barcodeFormat, barcodeShowText, style} = toRefs(MainStore.getCurrentElementsValues[0]);
 onMounted(() => {
 	label.value = props.modalLabel;
 });
@@ -155,6 +155,7 @@ const setBarcode = async () => {
 			options["module_color"] = barcodeColor.value || "#000000";
 		} else {
 			options["foreground"] = barcodeColor.value || "#000000";
+			options["show_text"] = barcodeShowText.value || "Yes";
 		}
 		let barcode = await frappe.call(
 			"print_designer.print_designer.page.print_designer.print_designer.get_barcode",
@@ -171,7 +172,7 @@ const setBarcode = async () => {
 	}
 };
 
-watch(() => [props.fieldnames, barcodeFormat.value], () => setBarcode(), { deep: true, immediate: true });
+watch(() => [props.fieldnames, barcodeFormat.value, barcodeShowText.value], () => setBarcode(), { deep: true, immediate: true });
 
 const parentField = ref("");
 const setParentField = (value) => {
